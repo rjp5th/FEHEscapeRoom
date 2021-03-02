@@ -6,6 +6,8 @@ public:
     void playSuccess();
     void playFailure();
     void playEntryChrip();
+private:
+    Tone tone; 
 }
 
 #endif
