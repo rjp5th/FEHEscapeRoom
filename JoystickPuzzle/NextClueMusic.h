@@ -3,9 +3,10 @@
 
 class NextClueMusic {
 public:
+    NextClueMusic();
     void playSuccess();
     void playFailure();
     void playEntryChrip();
-}
+};
 
 #endif
