@@ -9,8 +9,6 @@ public:
     void playSuccess();
     void playFailure();
     void playEntryChirp();
-private:
-    Tone tone; 
 };
 
 #endif
