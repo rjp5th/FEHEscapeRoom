@@ -8,6 +8,8 @@
 #define JOYSTICK_X_PIN A0
 #define JOYSTICK_Y_PIN A1
 
+#define INPUT_TIMEOUT 30000
+
 JoystickPasscode::JoystickPasscode() {
   this->sequenceIndex = 0;
 }
@@ -36,12 +38,20 @@ int JoystickPasscode::readJoystickAction() {
 /*
  * Wait until joystick action is completed, then store action into passcode
  */
-void JoystickPasscode::waitAndProcessAction() {
+bool JoystickPasscode::waitAndProcessAction() {
   
   // Wait for action on joystick
   int action = NO_PRESS;
+  unsigned long startTime = millis();
   while (action == NO_PRESS){
     action = this->readJoystickAction();
+
+    // If there is no action for the timeout period, and it is waiting for the sequence to be finished
+    // reset the sequence data and return false to report that the input timed out
+    if ((millis() - startTime) > INPUT_TIMEOUT && this->sequenceIndex != 0) {
+      this->resetSequence();
+      return false;
+    }
   }
 
   // Debug log the current action done
@@ -72,6 +82,7 @@ void JoystickPasscode::waitAndProcessAction() {
 
   // Wait until the joystick is back to normal before returning
   while (this->readJoystickAction() != NO_PRESS) {}
+  return true;
 }
 
 /*

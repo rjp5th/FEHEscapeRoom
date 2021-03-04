@@ -18,12 +18,11 @@ class JoystickPasscode {
 private:
     int inputSequence[SEQUENCE_SIZE];
     int sequenceIndex;
-
     int readJoystickAction();
 
 public:
     JoystickPasscode();
-    void waitAndProcessAction();
+    bool waitAndProcessAction();
     bool sequenceCompleted();
     bool sequenceCorrect();
     void resetSequence();

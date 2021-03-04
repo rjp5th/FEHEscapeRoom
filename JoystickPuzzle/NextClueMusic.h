@@ -9,6 +9,7 @@ public:
     void playSuccess();
     void playFailure();
     void playEntryChirp();
+    void playTimeoutChirp();
 };
 
 #endif
