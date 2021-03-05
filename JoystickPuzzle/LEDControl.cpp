@@ -1,9 +1,31 @@
 #include <Arduino.h>
 #include "LEDControl.h"
 
+// Interrupt functions
+ISR(TIMER1_COMPA_vect) {
+  digitalWrite(RED_LED_PIN, HIGH);
+}
+
+ISR(TIMER1_COMPB_vect) {
+  digitalWrite(GREEN_LED_PIN, HIGH);
+}
+
+ISR(TIMER1_OVF_vect) {
+  digitalWrite(RED_LED_PIN, LOW);
+  digitalWrite(GREEN_LED_PIN, LOW);
+}
+
+
 // Utility Functions
 
-static void enableBlinking(bool enablePin9, bool enablePin10) {
+static void enableBlinking(bool enablePinA, bool enablePinB) {
+  // Save old sreg value
+  uint8_t oldSREG = SREG;
+
+  // Disable interrupts while configuring IRQ
+  cli();
+  
+  
   // 150ms on
   // 100ms off
 
@@ -24,18 +46,8 @@ static void enableBlinking(bool enablePin9, bool enablePin10) {
 
   // Control Register Configuration
   // WGM13-10 = 14 (b1110) [Set Fast PWM with ICR1 TOP]
-  // CS12-10 = b011 [/64 prescaler]
-  // COM1A1-0 = 0b11  Set OC1A on compare match, clear OC1A at BOTTOM (Pin 9)
-  // COM1B1=0 = 0b11  Set OC1B on compare match (Pin 10)
-  unsigned short pinFlags = 0;
-  if (enablePin9) {
-    pinFlags |= (1<<COM1A1) | (0<<COM1A0);
-  }
-  if (enablePin10) {
-    pinFlags |= (1<<COM1B1) | (0<<COM1B0);
-  }
-  
-  TCCR1A =  pinFlags | (1<<WGM11);
+  // CS12-10 = b011 [/64 prescaler]  
+  TCCR1A =  (1<<WGM11);
   TCCR1B = (1<<WGM13) | (1<<WGM12) | (1<<CS11) | (1<<CS10);
   TCCR1C = 0;
   
@@ -45,9 +57,32 @@ static void enableBlinking(bool enablePin9, bool enablePin10) {
   // OCR1A/OC1B = 39322  - Value to make the LED blink with the ~60/40 duty cycle
   OCR1A = 39322;
   OCR1B = 39322;
+
+  // Enable interrupts for pin toggling
+  unsigned short interruptFlags = (1<<TOIE1);
+  if (enablePinA) {
+    interruptFlags |= (1<<OCIE1A);
+  }
+  if (enablePinB) {
+    interruptFlags |= (1<<OCIE1B);
+  }
+  TIMSK1 = interruptFlags;
+
+
+  // Re-enable interrupts
+  SREG = oldSREG;
 }
 
-static void disableBlinking() { 
+static void disableBlinking() {
+  // Save old sreg value
+  uint8_t oldSREG = SREG;
+
+  // Disable interrupts while configuring IRQ
+  cli();
+  
+  // Mask all interrupts
+  TIMSK1 = 0;
+  
   // Stop Timer
   TCCR1B = 0;
 
@@ -57,8 +92,11 @@ static void disableBlinking() {
   TCCR1B = (1<<CS11) | (1<<CS10);
 
   // Turn off pins if they were still active when timer was disabled
-  digitalWrite(9, LOW);
-  digitalWrite(10, LOW);
+  digitalWrite(RED_LED_PIN, LOW);
+  digitalWrite(GREEN_LED_PIN, LOW);
+
+  // Re-enable interrupts
+  SREG = oldSREG;
 }
 
 
@@ -66,7 +104,7 @@ static void disableBlinking() {
 
 void LEDControl::setLEDState(int state) {
   // If the LED was previously blinking, disable the timer
-  if (this->ledState & LED_BLINKING_FLAG != 0) {
+  if ((this->ledState & LED_BLINKING_FLAG) != 0) {
     disableBlinking();
   }
 
