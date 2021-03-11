@@ -30,7 +30,7 @@ static void enableBlinking(bool enablePinA, bool enablePinB) {
   // 100ms off
 
   // Using Fast PWM Mode with ICR1 set to timer TOP
-  // 16MHz base clock, 64 prescaler, 16-bit timer -> 262. 14 ms timer period
+  // 16MHz base clock, 64 prescaler, 16-bit timer -> 262.14 ms timer period
   // Targeting 157.284 ms on, 104.856 ms off actual values
 
   // Register Configuration
