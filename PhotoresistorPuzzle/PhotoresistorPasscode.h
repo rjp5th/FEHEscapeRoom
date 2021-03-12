@@ -6,7 +6,7 @@
 #define PIN_COUNT 6
 
 // Threshold at which the photoresistor registers darkness and a note press
-#define PHOTORESISTOR_THRESHOLD 100
+const uint16_t threshold_values[PIN_COUNT] = {50, 100, 100, 200, 100, 100};
 
 #define TONE_DURATION 500
 
@@ -20,6 +20,7 @@
 const uint8_t analogPinMappings[PIN_COUNT] = {A0, A1, A2, A3, A4, A5};
 
 // Port D corresponds to Pins 0-7 on Arduino, mask selects pins 2-7
+// Pins 2-7 corresponds note constant defines + 2
 #define SEVEN_SEGMENT_PORT PORTD
 #define SEVEN_SEGMENT_DIR DDRD
 #define SEVEN_SEGMENT_MASK 0b11111100

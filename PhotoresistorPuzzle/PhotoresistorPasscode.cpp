@@ -25,7 +25,7 @@ void PhotoresistorPasscode::updateState() {
   
         // Check if the photoresistor is blocked
         int pinReading = analogRead(analogPinMappings[i]);
-        if (pinReading < PHOTORESISTOR_THRESHOLD) {
+        if (pinReading < threshold_values[i]) {
           // Set the pin to be pressed
           this->enteredNotes.pin_value |= (1<<(2+i));
   
