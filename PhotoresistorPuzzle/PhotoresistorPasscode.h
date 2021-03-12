@@ -6,7 +6,7 @@
 #define PIN_COUNT 6
 
 // Threshold at which the photoresistor registers darkness and a note press
-const uint16_t threshold_values[PIN_COUNT] = {50, 100, 100, 200, 100, 100};
+const uint16_t threshold_values[PIN_COUNT] = {50, 100, 100, 200, 150, 75};
 
 #define TONE_DURATION 500
 
