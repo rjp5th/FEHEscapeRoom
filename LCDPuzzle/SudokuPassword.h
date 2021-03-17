@@ -5,7 +5,7 @@ class SudokuPassword {
   private:
     LiquidCrystal* lcd;
   public:
-    SudokuPassword(LiquidCrystal* lcd);
+    SudokuPassword(LiquidCrystal* lcd, int digits);
     void startPasscodeDisplayLoop();
     bool passcodeDisplayLoop();
 };
