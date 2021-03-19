@@ -8,9 +8,9 @@ class NumericPassword {
   private:
     LiquidCrystal* lcd;
     int digits;
-    int* correctPasscode;
+    int *correctPasscode;
   public:
-    NumericPassword(LiquidCrystal* lcd, int digits, int* correctPasscode);
+    NumericPassword(LiquidCrystal* lcd, int digits, int *correctPasscode);
     void startPasscodeDisplayLoop();
     bool passcodeDisplayLoop();
 };

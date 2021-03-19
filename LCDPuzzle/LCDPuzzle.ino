@@ -39,7 +39,7 @@ NumericPassword* passwordSequences[NUM_PASSWORDS];
 #define SUDOKU_PASSWORD_LENGTH 8
 #define TEMPERATURE_PASSWORD_LENGTH 4
 byte arrow_password_sequence[SEQUENCE_LENGTH] = {UP_ARROW, UP_ARROW, DOWN_ARROW, DOWN_ARROW, LEFT_ARROW, RIGHT_ARROW};
-int sudokuPassword[SUDOKU_PASSWORD_LENGTH] = {0};
+int sudokuPassword[SUDOKU_PASSWORD_LENGTH] = {1, 4, 5, 7, 2, 6, 9, 4};
 int temperaturePassword[TEMPERATURE_PASSWORD_LENGTH] = {1, 2, 3, 4};
 
 int passwordIndex = 0;
