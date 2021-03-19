@@ -52,13 +52,13 @@
 // Maximum ticks (spaces) between digits being printed
 #define GAME_ACTION_MAX_TICK 4
 // Minimum ticks between clue showing
-#define GAME_CLUE_COOLDOWN 4
+#define GAME_CLUE_COOLDOWN 3
 
 // The probabilities are as 1/n, since it check is random(n)==0
 // Probability of digit appearing on display
 #define GAME_ACTION_PROBABILITY 4
 // Probability of successful digit leading to clue showing (after cooldown)
-#define GAME_CLUE_PROBABILITY 4
+#define GAME_CLUE_PROBABILITY 3
 
 // Calculates the offset in display contents relative to the current display index
 // Allows display shifting without needing to constantly shift portions of memory
