@@ -52,13 +52,13 @@
 // Maximum ticks (spaces) between digits being printed
 #define GAME_ACTION_MAX_TICK 4
 // Minimum ticks between clue showing
-#define GAME_CLUE_COOLDOWN 3
+#define GAME_CLUE_COOLDOWN 4
 
 // The probabilities are as 1/n, since it check is random(n)==0
 // Probability of digit appearing on display
 #define GAME_ACTION_PROBABILITY 4
 // Probability of successful digit leading to clue showing (after cooldown)
-#define GAME_CLUE_PROBABILITY 3
+#define GAME_CLUE_PROBABILITY 4
 
 // Calculates the offset in display contents relative to the current display index
 // Allows display shifting without needing to constantly shift portions of memory
@@ -67,10 +67,12 @@
 // Game state constants
 // Waiting for game to start by number press
 #define GAME_STATE_PENDING_PRESS 0
+// Displaying first frame frozen, waiting for user input
+#define GAME_STATE_DISPLAY_FIRST_FRAME 1
 // Game is actively being played
-#define GAME_STATE_PLAYING 1
+#define GAME_STATE_PLAYING 2
 // Game is finished being played and now displaying end screen
-#define GAME_STATE_END_SCREEN 2
+#define GAME_STATE_END_SCREEN 3
 
 /*
  * Class Declarations
@@ -95,7 +97,7 @@ class MinigameControl{
     // See method implementations for descriptions
     void redrawDisplay();
     bool shouldShowClue();
-    void generateNextDisplayItem();
+    void generateNextDisplayItem(bool disableGeneration);
     void endSequence(bool won);
     int getPendingPress();
   public:

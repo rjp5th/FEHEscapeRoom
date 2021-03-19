@@ -27,23 +27,22 @@ NumericPassword::NumericPassword(LiquidCrystal* lcd, int digits, int *correctPas
 }
 
 void NumericPassword::startPasscodeDisplayLoop(){
-  // Test code to make sure that each passcode length runs
-  lcd->clear();
-  lcd->print("Passcode: ");
-  lcd->write('0'+digits);
-  delay(2000);
+  
 }
+
+#define PROMPT_SIZE 6
 
 bool NumericPassword::passcodeDisplayLoop(){
   lcd->clear();
   int i = 0;
+  lcd->print("Code: ");
   while(i<digits){
-    lcd->setCursor(i,0);
+    lcd->setCursor(i+PROMPT_SIZE,0);
     lcd->print("_");
     i++;
   }
   i=0;
-  int code[digits] = {0,0,0,0,0,0,0,0};
+  int code[digits];
   bool isTrue = true;
   while(i<digits){
     if (ir_data_available()){
@@ -82,7 +81,7 @@ bool NumericPassword::passcodeDisplayLoop(){
         num = 9;
         break;    
         }
-        lcd->setCursor(i,0);
+        lcd->setCursor(i+PROMPT_SIZE,0);
         lcd->print(num);
         code[i] = num;
         i++;
@@ -92,20 +91,22 @@ bool NumericPassword::passcodeDisplayLoop(){
   }
   bool arraysEqual = true;
   i = 0;
+  int* correctPasscodeIndex = correctPasscode;
   while(i<digits)
   {
-    if(code[i] != *correctPasscode)
+    if(code[i] != *correctPasscodeIndex)
     {
       arraysEqual = false;
       
       }
-    correctPasscode++;
+    correctPasscodeIndex++;
     i++;
     }
   if (arraysEqual){
     lcd->setCursor(0,1);
     lcd->print("CORRECT");
     isTrue = true;
+    delay(2000);
   }
   else
   {
@@ -113,6 +114,7 @@ bool NumericPassword::passcodeDisplayLoop(){
   lcd->print("INCORRECT");
   isTrue = false;
   ir_resume();
+  delay(2000);
   }
   return isTrue; 
 }

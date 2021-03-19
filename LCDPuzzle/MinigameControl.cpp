@@ -26,7 +26,8 @@ byte brBorderChar[] = {0x03, 0x03, 0x07, 0x07, 0x0F, 0x0F, 0x1F, 0x1F};
 unsigned long digits[10] = {DIGIT_0, DIGIT_1, DIGIT_2, DIGIT_3, DIGIT_4, DIGIT_5, DIGIT_6, DIGIT_7, DIGIT_8, DIGIT_9};
 
 // Secret Password Sequence
-extern byte *arrow_password_sequence;
+//extern byte *arrow_password_sequence;
+byte arrow_password_sequence[SEQUENCE_LENGTH] = {UP_ARROW, UP_ARROW, DOWN_ARROW, DOWN_ARROW, LEFT_ARROW, RIGHT_ARROW};
 
 /*
  * Class Constructor. Just receives lcd variable for later use
@@ -89,28 +90,34 @@ void MinigameControl::startGameDisplayLoop() {
   //Seed RNG
   randomSeed(analogRead(0));
 
-  // Reset game state
-  for (int i = 0; i < GAME_WIDTH; i++){
-    displayContents[i] = ' ';
-  }
-  displayContentsOffset = 0;
-  
-  passwordSequenceIndex = 0;
-  ticksSinceGenerate = GAME_ACTION_MAX_TICK;
-  showClueCooldown = GAME_CLUE_COOLDOWN;
-  pendingPress = -1;
-  tickSpeed = GAME_TICK_SPEED_DEFAULT;
-  gameState = GAME_STATE_PENDING_PRESS;
+  // Reset game state  
+  passwordSequenceIndex = 0;                  // Reset entered password
+  ticksSinceGenerate = GAME_ACTION_MAX_TICK;  // Force the first item generated to be a press
+  showClueCooldown = GAME_CLUE_COOLDOWN;      // Set game clue cooldown to default value
+  pendingPress = -1;                          // Clear any pending presses
+  tickSpeed = GAME_TICK_SPEED_DEFAULT;        // Set the tick speed to starting speed
+  gameState = GAME_STATE_PENDING_PRESS;       // Set the game state to launch screen
+  nextGameTick = millis();                    // Set the next game tick to start immediately
 
-  nextGameTick = millis();
+  // Generate a game field
+  displayContentsOffset = 0;
+  for (int i = 0; i < GAME_WIDTH; i++){
+    bool disableGeneration = false;
+    if (i == 1 || i == 2){
+      disableGeneration = true;
+    }
+    displayContentsOffset = (displayContentsOffset+1)%GAME_WIDTH;
+    generateNextDisplayItem(disableGeneration);
+  }
 }
 
 /*
  * Generates the next item to appear on the display, either digit or space
  * Determined using RNG and game state
+ * Disable generation will force the block to be clear. Used during game start
  */
-void MinigameControl::generateNextDisplayItem() {
-  if (ticksSinceGenerate >= GAME_ACTION_MAX_TICK || random(GAME_ACTION_PROBABILITY) == 0) {
+void MinigameControl::generateNextDisplayItem(bool disableGeneration) {
+  if (!disableGeneration && (ticksSinceGenerate >= GAME_ACTION_MAX_TICK || random(GAME_ACTION_PROBABILITY) == 0)) {
     ticksSinceGenerate = 0;
     // Set display to random character between 0 and 9
     displayContents[DISP_REL_OFFSET(GAME_WIDTH-1)] = '0' + random(10);
@@ -180,9 +187,19 @@ void MinigameControl::endSequence(bool won) {
 void MinigameControl::displayLoop() {
   if (gameState == GAME_STATE_PENDING_PRESS) {
     if (getPendingPress() != -1){
-      gameState = GAME_STATE_PLAYING;
+      this->redrawDisplay();
+      gameState = GAME_STATE_DISPLAY_FIRST_FRAME;
     }
     return;
+  } else if (gameState == GAME_STATE_DISPLAY_FIRST_FRAME) {
+    int entry = getPendingPress();
+    if ((entry + '0') == displayContents[DISP_REL_OFFSET(0)]){
+      pendingPress = entry;
+      lcd->setCursor(2, 0);
+      lcd->write(byte(SMASH_CHAR));
+      nextGameTick = millis() + tickSpeed;
+      gameState = GAME_STATE_PLAYING;
+    }
   } else if (gameState == GAME_STATE_PLAYING) {
     if (nextGameTick <= millis()) {
       nextGameTick = millis() + tickSpeed;
@@ -195,7 +212,7 @@ void MinigameControl::displayLoop() {
       pendingPress = -1;
   
       displayContentsOffset = (displayContentsOffset+1)%GAME_WIDTH;
-      this->generateNextDisplayItem();
+      this->generateNextDisplayItem(false);
       this->redrawDisplay();
     }
   
@@ -218,7 +235,7 @@ void MinigameControl::displayLoop() {
         // Flash a clue if it should
         lcd->setCursor(2, 0);
         if (this->shouldShowClue()){
-          lcd->write(arrow_password_sequence[passwordSequenceIndex]);
+          lcd->write(byte(arrow_password_sequence[passwordSequenceIndex]));
           passwordSequenceIndex++;
           if (passwordSequenceIndex == SEQUENCE_LENGTH){
             delay(tickSpeed);
