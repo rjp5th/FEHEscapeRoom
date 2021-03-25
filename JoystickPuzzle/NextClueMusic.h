@@ -3,6 +3,8 @@
 
 #include <Arduino.h>
 
+#define BUZZER_PIN 11
+
 class NextClueMusic {
 public:
     NextClueMusic() {}
