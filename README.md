@@ -1,4 +1,5 @@
 # FEH Escape Room Microcontroller Code
+This repository contains the Arduino code for the microcontrollers used in FEH 1282.01 Team 42's Escape Room.
 
 ## JoystickPuzzle
 Code for the Joystick Puzzle. This puzzle will play a series of tones which is the clue for the next puzzle, the Photoresistor Puzzle, when the correct sequence of inputs is entered on the joystick. The sequence of inputs for this puzzle is given in the LCD Puzzle.
