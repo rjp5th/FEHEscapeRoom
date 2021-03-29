@@ -28,7 +28,7 @@ void ir_resume() {
 #define IR_PIN 5
 LiquidCrystal lcd(7, 8, 9, 10, 11, 12); // RS, E, D4, D5, D6, D7
 
-#define NUM_PASSWORDS 2
+#define NUM_PASSWORDS 3
 
 MinigameControl* minigame;
 NumericPassword* passwordSequences[NUM_PASSWORDS];
@@ -38,8 +38,10 @@ NumericPassword* passwordSequences[NUM_PASSWORDS];
  */
 #define SUDOKU_PASSWORD_LENGTH 8
 #define TEMPERATURE_PASSWORD_LENGTH 4
+#define BLOCK_FITTING_PASSWORD_LENGTH 6
 int sudokuPassword[SUDOKU_PASSWORD_LENGTH] = {1, 4, 5, 7, 2, 6, 9, 4};
-int temperaturePassword[TEMPERATURE_PASSWORD_LENGTH] = {1, 2, 3, 4};
+int temperaturePassword[TEMPERATURE_PASSWORD_LENGTH] = {7, 3, 6, 5};
+int blockFittingPassword[BLOCK_FITTING_PASSWORD_LENGTH] = {9, 2, 8, 9, 6, 2};
 
 /*
  * Global State Variables
@@ -63,6 +65,9 @@ void setup() {
 
   // Temperature Password
   passwordSequences[1] = new NumericPassword(&lcd, TEMPERATURE_PASSWORD_LENGTH, temperaturePassword);
+
+  // Block Fitting Password
+  passwordSequences[2] = new NumericPassword(&lcd, BLOCK_FITTING_PASSWORD_LENGTH, blockFittingPassword);
 }
 
 void loop() {
