@@ -1,6 +1,6 @@
 #include "PhotoresistorPasscode.h"
 
-uint16_t threshold_values[PIN_COUNT];
+int threshold_values[PIN_COUNT];
 
 PhotoresistorPasscode::PhotoresistorPasscode() {
   // Initialize Pin states
@@ -11,7 +11,7 @@ PhotoresistorPasscode::PhotoresistorPasscode() {
 
   for (int i = 0; i < PIN_COUNT; i++){
     int pinReading = analogRead(analogPinMappings[i]);
-    threshold_values[i] = max(pinReading - THRESHOLD, 0);
+    threshold_values[i] = max(pinReading - threshold_subtract[i], 0);
   }
 }
 

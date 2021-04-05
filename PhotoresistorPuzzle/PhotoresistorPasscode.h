@@ -6,7 +6,7 @@
 #define PIN_COUNT 6
 
 // Threshold at which the photoresistor registers darkness and a note press
-#define THRESHOLD 100
+int threshold_subtract[PIN_COUNT] = {150, 150, 100, 150, 150, 150};
 
 #define TONE_DURATION 500
 
