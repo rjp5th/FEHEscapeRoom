@@ -1,11 +1,18 @@
 #include "PhotoresistorPasscode.h"
 
+uint16_t threshold_values[PIN_COUNT];
+
 PhotoresistorPasscode::PhotoresistorPasscode() {
   // Initialize Pin states
   pinMode(RESET_PIN, INPUT_PULLUP);
   SEVEN_SEGMENT_DIR |= SEVEN_SEGMENT_MASK;  // Set all pins for 7 segment display to output, preserve others
 
   this->resetSequence();
+
+  for (int i = 0; i < PIN_COUNT; i++){
+    int pinReading = analogRead(analogPinMappings[i]);
+    threshold_values[i] = max(pinReading - THRESHOLD, 0);
+  }
 }
 
 void PhotoresistorPasscode::resetSequence() {
